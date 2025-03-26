@@ -9,7 +9,7 @@ export default defineConfig({
         bundle: true,
       },
       output: {
-        copy: ['scripts/*', 'bin.js'],
+        copy: ['scripts/*', 'bin.js', 'README.md', 'LICENSE'],
       },
     },
   ],

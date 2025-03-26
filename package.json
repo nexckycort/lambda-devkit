@@ -1,8 +1,22 @@
 {
   "name": "@nexckycort/lambda-devkit",
-  "version": "0.0.10",
+  "version": "0.0.12",
   "author": "nexckycort <nexckycort@gmail.com>",
   "description": "A development toolkit for compiling and running AWS Lambda functions locally with API Gateway simulation.",
+  "keywords": [
+    "aws-lambda",
+    "lambda-devkit",
+    "local-lambda",
+    "api-gateway-simulation",
+    "lambda-local-development",
+    "serverless-development",
+    "lambda-testing",
+    "local-api-gateway",
+    "lambda-cli",
+    "compile-typescript-lambda",
+    "run-lambda-locally",
+    "lambda-function-handler"
+  ],
   "type": "module",
   "repository": {
     "type": "git",
