@@ -1,0 +1,49 @@
+{
+  "name": "@nexckycort/lambda-devkit",
+  "version": "0.0.10",
+  "author": "nexckycort <nexckycort@gmail.com>",
+  "description": "A development toolkit for compiling and running AWS Lambda functions locally with API Gateway simulation.",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nexckycort/lambda-devkit.git"
+  },
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.js"
+    }
+  },
+  "types": "./index.d.ts",
+  "bin": {
+    "ldk": "bin.js"
+  },
+  "files": ["*"],
+  "scripts": {
+    "build": "rslib build && node postbuild.js",
+    "check": "biome check --write",
+    "dev": "rslib build --watch",
+    "start": "node ./dist/index.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "commander": "^13.1.0",
+    "cosmiconfig": "^9.0.0",
+    "tsx": "^4.19.3"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "@microsoft/api-extractor": "^7.52.2",
+    "@rslib/core": "^0.5.5",
+    "@tsconfig/node22": "^22.0.1",
+    "@types/aws-lambda": "^8.10.148",
+    "@types/node": "^22.8.1",
+    "typescript": "^5.8.2"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true,
+    "registry": "https://registry.npmjs.org/"
+  }
+}
