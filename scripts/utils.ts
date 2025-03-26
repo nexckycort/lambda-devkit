@@ -14,5 +14,8 @@ export function createApiGatewayEvent(req: IncomingMessage) {
     queryStringParameters: Object.fromEntries(url.searchParams.entries()),
     headers: req.headers,
     body: '',
+    requestContext: {
+      domainName: 'example',
+    },
   } as APIGatewayProxyEvent;
 }
