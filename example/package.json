@@ -1,0 +1,11 @@
+{
+  "name": "example",
+  "scripts": {
+    "build": "ldk build",
+    "dev": "ldk dev --watch"
+  },
+  "devDependencies": {
+    "@nexckycort/lambda-devkit": "^0.0.17",
+    "typescript": "^5.8.2"
+  }
+}
