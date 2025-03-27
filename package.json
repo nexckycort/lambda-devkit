@@ -1,6 +1,6 @@
 {
   "name": "@nexckycort/lambda-devkit",
-  "version": "0.0.13",
+  "version": "0.0.17",
   "author": "nexckycort <nexckycort@gmail.com>",
   "description": "A development toolkit for compiling and running AWS Lambda functions locally with API Gateway simulation.",
   "keywords": [
@@ -44,6 +44,7 @@
   "dependencies": {
     "commander": "^13.1.0",
     "cosmiconfig": "^9.0.0",
+    "esbuild": "^0.25.1",
     "tsx": "^4.19.3"
   },
   "devDependencies": {

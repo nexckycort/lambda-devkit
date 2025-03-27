@@ -23,7 +23,7 @@ A development toolkit for compiling and running AWS Lambda functions locally wit
 Install the package as a project dependency:
 
 ```bash
-npm install @nexckycort/lambda-devkit --save-dev
+pnpm add @nexckycort/lambda-devkit -D
 ```
 
 ---
@@ -31,32 +31,44 @@ npm install @nexckycort/lambda-devkit --save-dev
 ## Quick Start
 
 1. **Create a Configuration File**  
-   Create a file named `lambda-devkit.config.ts` in the root of your project. Here's an example configuration:
+  Create a file named `lambda-devkit.config.ts` in the root of your project. Here's an example configuration:
 
-   ```typescript
-   const config = {
-     "routes": [
-       {
-         "method": "GET",
-         "path": "users",
-         "lambda": {
-           "handler": "src/getUsers",
-           "timeout": 5000
-         }
-       },
-       {
-         "method": "POST",
-         "path": "users",
-         "lambda": {
-           "handler": "src/createUser",
-           "timeout": 10000
-         }
-       }
-     ],
-     "port": 4000
-   }
+  ```typescript
+  import type { LambdaDevkitConfig } from '@nexckycort/lambda-devkit';
 
-   export default config;
+  const config: LambdaDevkitConfig = {
+    server: {
+      routes: [
+        {
+          method: 'GET',
+          path: 'users',
+          lambda: {
+            handler: 'functions/getUsers',
+            timeout: 5000,
+          },
+        },
+        {
+          method: 'POST',
+          path: 'users',
+          lambda: {
+            handler: 'functions/createUser',
+            timeout: 10000,
+          },
+        },
+      ],
+      port: 4000,
+      environment: {
+        ENV: 'dev',
+      },
+    },
+    build: {
+      bundle: true,
+      minify: true,
+      external: ['@aws-sdk/*'],
+    },
+  };
+
+  export default config;
    ```
 
 2. **Start the Local Server**  
@@ -102,7 +114,17 @@ ldk dev
 
 ## Configuration
 
-The configuration file (`lambda-devkit.config.ts`) allows you to define routes, handlers, and other settings. Below is a detailed explanation of each field:
+Lambda DevKit uses a configuration file (`lambda-devkit.config.ts`) to define routes, handlers, and other settings. Below is a detailed explanation of each field:
+
+### `server`
+
+Server configuration for local development.
+
+| Field         | Type             | Description                                                                 |
+|---------------|------------------|-----------------------------------------------------------------------------|
+| `routes`      | `RouteConfig[]`  | List of routes and their configurations.                                   |
+| `port`        | `number`         | Port on which the local server will run. Default: `4000`.                  |
+| `environment` | `object`         | Environment variables to be passed to the Lambda function.                 |
 
 ### `routes`
 
@@ -120,12 +142,21 @@ Configuration for a Lambda function.
 
 | Field         | Type             | Description                                                                 |
 |---------------|------------------|-----------------------------------------------------------------------------|
-| `handler`     | `string`         | Path to the folder containing the Lambda handler (e.g., `src/myFunction`). |
+| `handler`     | `string`         | Path to the folder containing the Lambda handler (e.g., `functions/myFunction`). |
 | `timeout`     | `number`         | Maximum execution time for the Lambda function in milliseconds.            |
 
-### `port`
+### `build`
 
-The port on which the local server will run. Default: `4000`.
+Build configuration for the Lambda functions.
+
+| Field         | Type             | Description                                                                 |
+|---------------|------------------|-----------------------------------------------------------------------------|
+| `entryPoint`  | `string`         | Entry point for the build process. Default: `"functions/**"`.              |
+| `bundle`      | `boolean`        | Whether to bundle the Lambda function code into a single file.             |
+| `minify`      | `boolean`        | Whether to minify the Lambda function code during the build process.       |
+| `sourcemap`   | `boolean \| string` | Sourcemap generation options (`true`, `'linked'`, `'inline'`, etc.).    |
+| `outbase`     | `string`         | Base directory for resolving entry points. Default: `"functions"`.         |
+| `external`    | `string[]`       | External libraries that should be excluded from the build. Default: `["@aws-sdk/*"]`. |
 
 ---
 
@@ -154,19 +185,27 @@ export const handler = async (event: any) => {
 #### `lambda-devkit.config.ts`
 
 ```typescript
-const config = {
-  "routes": [
-    {
-      "method": "GET",
-      "path": "users",
-      "lambda": {
-        "handler": "src/getUsers",
-        "timeout": 5000
-      }
-    }
-  ],
-  "port": 4000
-}
+import type { LambdaDevkitConfig } from '@nexckycort/lambda-devkit';
+
+const config: LambdaDevkitConfig = {
+  server: {
+    routes: [
+      {
+        method: 'GET',
+        path: 'users',
+        lambda: {
+          handler: 'functions/getUsers'
+        },
+      },
+    ],
+    port: 4000,
+  },
+  build: {
+    bundle: true,
+    minify: true,
+    external: ['@aws-sdk/*'],
+  },
+};
 
 export default config;
 ```

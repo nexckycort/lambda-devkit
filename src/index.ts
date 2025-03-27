@@ -3,11 +3,18 @@ import { Command } from 'commander';
 import { execSync } from 'node:child_process';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { buildProjects } from './build.js';
 import { getConfig } from './config.js';
 export type { LambdaDevkitConfig } from './config.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+const packageManager = process.env.npm_execpath?.includes('pnpm')
+  ? 'pnpm'
+  : process.env.npm_execpath?.includes('yarn')
+    ? 'yarn'
+    : 'npm';
 
 const program = new Command();
 
@@ -37,13 +44,28 @@ program
     'Specify the path to the configuration file (default: lambda-devkit.config.ts)',
   )
   .action(async (options) => {
-    const config = await getConfig();
+    const { server } = await getConfig();
+    if (!server) {
+      console.log('server config is requeried');
+      return;
+    }
     if (options.config) {
       console.log(`Using custom configuration file: ${options.config}`);
     }
+    let tsxExecutable!: string;
+    if (packageManager === 'pnpm') {
+      tsxExecutable = 'pnpm dlx tsx';
+    } else {
+      tsxExecutable = 'npx tsx';
+    }
+    const watchOption = options.watch ? ' watch' : '';
+    const envFile = server.environment?.ENV
+      ? ` --env-file=${process.cwd()}/.env.${server.environment.ENV} `
+      : ' ';
+    const serverScript = resolve(__dirname, './scripts/server.ts');
+    const serializedConfig = `'${JSON.stringify(server)}'`;
 
-    const tsxPath = resolve(__dirname, './node_modules/.bin/tsx');
-    const command = `${tsxPath}${options.watch ? ' watch' : ''} --env-file=${process.cwd()}/.env.${config.environment?.ENV} ${resolve(__dirname, './scripts/server.ts')} '${JSON.stringify(config)}'`;
+    const command = `${tsxExecutable}${watchOption}${envFile}${serverScript} ${serializedConfig}`;
 
     execSync(command, {
       stdio: 'inherit',
@@ -67,12 +89,13 @@ program
   .option('--minify', 'Minify the bundled code for optimized performance.')
   .option('--sourcemap', 'Generate source maps for debugging purposes.')
   .action(async (options) => {
-    console.log('Building project with the following options:', options);
     if (options.debug) console.log('Debug mode enabled.');
     if (options.bundle)
       console.log('Bundling all dependencies into a single file.');
     if (options.minify) console.log('Minifying the bundled code.');
     if (options.sourcemap) console.log('Generating source maps.');
+
+    await buildProjects({});
   });
 
 program.parse();

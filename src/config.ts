@@ -31,29 +31,68 @@ interface RouteConfig {
 
 export type LambdaDevkitConfig = {
   /**
-   * List of routes and their configurations.
-   * Each route maps an HTTP method and path to a Lambda function.
+   * Server configuration
    */
-  routes: RouteConfig[];
+  server?: {
+    /**
+     * List of routes and their configurations.
+     * Each route maps an HTTP method and path to a Lambda function.
+     */
+    routes: RouteConfig[];
+    /**
+     * Port on which the local server will run.
+     * Default: 4000
+     */
+    port?: number;
+    /**
+     * Environment variables to be passed to the Lambda function.
+     * These variables are used to configure the runtime environment of the Lambda function.
+     *
+     * @property {string} ENV - The environment in which the Lambda function is running.
+     *                          Possible values:
+     *                          - 'prod': Production environment.
+     *                          - 'qa': Quality Assurance environment.
+     *                          - 'dev': Development environment.
+     *                          - 'local': Local development environment.
+     */
+    environment?: {
+      ENV: 'prod' | 'qa' | 'dev' | 'local';
+    };
+  };
   /**
-   * Port on which the local server will run.
-   * Default: 4000
+   * Build configuration for the Lambda functions.
    */
-  port?: number;
-  /**
-   * Environment variables to be passed to the Lambda function.
-   * These variables are used to configure the runtime environment of the Lambda function.
-   *
-   * @property {string} ENV - The environment in which the Lambda function is running.
-   *                          Possible values:
-   *                          - 'prod': Production environment.
-   *                          - 'qa': Quality Assurance environment.
-   *                          - 'dev': Development environment.
-   *                          - 'local': Local development environment.
-   *                          Default: 'local'.
-   */
-  environment?: {
-    ENV: 'prod' | 'qa' | 'dev' | 'local';
+  build?: {
+    /**
+     * Entry point for the build process.
+     * If not specified, defaults to "functions/**".
+     * Example: "functions/myFunction"
+     */
+    entryPoint?: string;
+    /**
+     * Whether to bundle the Lambda function code into a single file.
+     * Default: false
+     */
+    bundle: boolean;
+    /**
+     * Whether to minify the Lambda function code during the build process.
+     * Default: false
+     */
+    minify: boolean;
+    sourcemap?: boolean | 'linked' | 'inline' | 'external' | 'both';
+    /**
+     * Base directory for resolving entry points.
+     * If your build contains multiple entry points in separate directories,
+     * the directory structure will be replicated into the output directory relative to the outbase directory.
+     * Default: "functions"
+     */
+    outbase?: string; // Default: "functions"
+    /**
+     * External libraries that should be excluded from the build.
+     * By default, includes the AWS SDK (`@aws-sdk/*`).
+     * Example: ["@aws-sdk/*", "lodash"]
+     */
+    external?: string[]; // Default: ["@aws-sdk/*"]
   };
 };
 
@@ -73,13 +112,13 @@ export const getConfig = async () => {
     );
   }
 
-  const config: LambdaDevkitConfig = Object.assign(
-    { port: 4000, environment: { ENV: 'local' } },
-    searchedConfig.config,
-  );
-  for (const route of config.routes) {
-    if (!route.lambda?.timeout) {
-      route.lambda.timeout = 30000;
+  const config: LambdaDevkitConfig = searchedConfig.config;
+  if (config.server) {
+    config.server.port = 4000;
+    for (const route of config.server.routes) {
+      if (!route.lambda?.timeout) {
+        route.lambda.timeout = 30000;
+      }
     }
   }
 

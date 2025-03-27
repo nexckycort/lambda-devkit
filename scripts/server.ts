@@ -11,7 +11,7 @@ interface LambdaModule {
 }
 
 const [, , configRaw] = process.argv;
-const config: LambdaDevkitConfig = JSON.parse(configRaw ?? '{}');
+const config: LambdaDevkitConfig['server'] = JSON.parse(configRaw ?? '{}');
 
 async function importLambda(handlerPath: string): Promise<LambdaModule> {
   const modulePath = join(process.cwd(), `${handlerPath}/index.ts`);
@@ -26,7 +26,7 @@ interface RouteHandler {
 }
 
 const routeMap: RouteHandler[] = [];
-for (const route of config.routes) {
+for (const route of config?.routes ?? []) {
   const fullPath = route.path.startsWith('/') ? route.path : `/${route.path}`;
   routeMap.push({
     method: route.method,
@@ -115,7 +115,7 @@ try {
     }
   });
 
-  const PORT = +(config.port ?? 4000);
+  const PORT = +(config?.port ?? 4000);
   server.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);
   });
