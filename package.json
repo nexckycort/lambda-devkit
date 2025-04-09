@@ -1,6 +1,6 @@
 {
   "name": "@nexckycort/lambda-devkit",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "author": "nexckycort <nexckycort@gmail.com>",
   "description": "A development toolkit for compiling and running AWS Lambda functions locally with API Gateway simulation.",
   "keywords": [

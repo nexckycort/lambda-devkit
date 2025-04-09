@@ -60,7 +60,7 @@ program
     }
     const watchOption = options.watch ? ' watch' : '';
     const envFile = server.environment?.ENV
-      ? ` --env-file=${process.cwd()}/.env.${server.environment.ENV} `
+      ? ` --env-file=.env.${server.environment.ENV} `
       : ' ';
     const serverScript = resolve(__dirname, './scripts/server.ts');
     const serializedConfig = `'${JSON.stringify(server)}'`;
